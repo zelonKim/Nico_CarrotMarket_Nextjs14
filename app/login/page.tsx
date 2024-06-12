@@ -60,7 +60,8 @@ import React from "react";
 import { FormData } from "undici-types";
 import { redirect } from "next/navigation";
 import { useFormState } from "react-dom";
-import { handleForm } from "./actions";
+import { login } from "./actions";
+import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
 
 export default function Login() {
 /*
@@ -77,7 +78,7 @@ export default function Login() {
   }
 */
 
-  const [state, action] = useFormState(handleForm, { potato: 1} as any);
+  const [state, action] = useFormState(login, null);
 
   return (
     <div className="flex flex-col gap-10 py-8 px-6">
@@ -92,14 +93,15 @@ export default function Login() {
             type="email"
             placeholder="Email"
             required
-            errors={[]}
+            errors={state?.fieldErrors.email}
         />
         <FormInput
             name="password"
             type="password"
             placeholder="Password"
             required
-            errors={state?.errors ?? []}
+            minLength={PASSWORD_MIN_LENGTH}
+            errors={state?.fieldErrors.password}
         />
         <FormButton text="Log in" />
       </form>
