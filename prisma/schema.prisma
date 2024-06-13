@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int        @id @default(autoincrement())
+  username   String     @unique
+  email      String?    @unique
+  password   String?
+  phone      String?    @unique
+  github_id  String?    @unique
+  avatar     String?
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  SMSToken   SMSToken[]
+}
+
+model SMSToken {
+  id         Int      @id @default(autoincrement())
+  token      String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // SMSToken 테이블의 userId 필드가 User 테이블의 id를 참조함.
+
+  // onDelete: Cascade -> 부모 테이블이 삭제되면 관계된 자식 테이블도 함께 삭제함.
+  // onDelete: setNull -> 부모 테이블이 삭제되면 관계된 자식 테이블의 필드를 null로 설정함.
+  // onDelete: Restrict -> 관계된 자식 테이블이 모두 삭제되어야만 부모 테이블을 삭제할 수 있도록 제한함.
+  userId Int
+}
