@@ -40,7 +40,7 @@ export async function smsLogin(prevState: ActionState, formData: FormData){
         if(!result.success) {
             return {
                 token: true,
-                error:result.error.flatten()
+                error: result.error.flatten()
             } 
         } else {
             redirect("/");

@@ -4,6 +4,10 @@ import {z} from "zod";
 import { PrismaClient } from "@prisma/client";
 import bcrypt, { hash } from "bcrypt";
 
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import getSession from "@/lib/session";
+
 const db = new PrismaClient();
 
 
@@ -31,7 +35,7 @@ function checkPasswords({password, confirm_password} : {password: string, confir
 
 
 
-const checkUniqueUsername = async (username: string) => {
+/* const checkUniqueUsername = async (username: string) => {
     // 중복 확인
     const user = await db.user.findUnique({
         where: {
@@ -46,10 +50,10 @@ const checkUniqueUsername = async (username: string) => {
     } else { 
         return true
     }
-}
+} */
 
 
-const checkUniqueEmail = async (email: string) => {
+/* const checkUniqueEmail = async (email: string) => {
     const user = await db.user.findUnique({
         where: {
             email
@@ -59,8 +63,7 @@ const checkUniqueEmail = async (email: string) => {
         }
     });
     return !Boolean(user);
-}
- 
+}*/
 
 const formSchema = z.object({
     username: z.string({invalid_type_error: "User name must be a string",
@@ -68,26 +71,93 @@ const formSchema = z.object({
                 .toLowerCase()
                 .trim()
                 //.transform(username => `⭐️${username}⭐️`) //.transform(변형 전의 데이터 => 변형 후의 데이터)
-                .refine(checkUsername, "No potato allowed!") // refine(체크 함수, "에러 메시지"): 체크 함수가 false를 반환하면 에러 메시지를 보여줌.
-                .refine(checkUniqueUsername, "The username is already using"),
-    email: z.string().email().toLowerCase().refine(checkUniqueEmail, "The email is already using"),
+                .refine(checkUsername, "No potato allowed!"), // refine(체크 함수, "에러 메시지"): 체크 함수가 false를 반환하면 에러 메시지를 보여줌.
+                //.refine(checkUniqueUsername, "The username is already using")
+    email: z.string()
+            .email()
+            .toLowerCase(),
+            //.refine(checkUniqueEmail, "The email is already using")
     password: z.string()
                 .min(PASSWORD_MIN_LENGTH),
                 // .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR) // .regex(정규표현식, "에러 메시지"): 정규표현식과 일치하지 않을 경우, 에러 메시지를 보여줌.
     confirm_password: z.string().min(PASSWORD_MIN_LENGTH)
-}).refine(checkPasswords, {
+    })
+    .superRefine(async({username}, ctx) => { // 체크함수의 인수로 컨텍스트(에러 묶음)를 받을 수 있음.
+        const user = await db.user.findUnique({
+            where: {
+                username 
+            },
+            select: {
+                id: true,
+            }
+        })
+        if(user) {
+            ctx.addIssue({ // 컨텍스트.addIssue()를 통해 에러를 설정함.
+                code: 'custom',
+                message: "The username is already using",
+                path: ['username'],
+                fatal: true, 
+            });
+            return z.NEVER; 
+            // fatal: true와 return z.NEVER를 통해 이후에 나오는 refine()을 실행하지 않도록 해줌.
+        }
+    })
+    .superRefine(async({email}, ctx) => { 
+        const user = await db.user.findUnique({
+            where: {
+                email
+            },
+            select: {
+                id: true,
+            }
+        })
+        if(user) {
+            ctx.addIssue({ 
+                code: 'custom',
+                message: "The email is already using",
+                path: ['email'],
+                fatal: true, 
+            });
+            return z.NEVER;
+        }
+    })
+    .refine(checkPasswords, {
         message: "Both password must be same!", 
         path: ["confirm_password"], // 에러 메시지를 보여줄 곳의 ["키"]를 지정함.
     })
 
 
-
-
-
-
 //////////////////
 
 export async function createAccount(prevState:any, formData:FormData) {
+    console.log(cookies()) // 현재 브라우저에 저장된 쿠키를 반환함.
+    // {
+    //     _parsed: Map(0) {},
+    //     _headers: HeadersList {
+    //       cookies: null,
+    //       [Symbol(headers map)]: Map(0) {},
+    //       [Symbol(headers map sorted)]: null
+    //     }
+    //   }
+
+
+    // {
+    //     _parsed: Map(1) {
+    //       'delicious-carrot' => {
+    //         name: 'delicious-carrot',
+    //         value: 'Fe26.2*1*29c68a6be49ca82c60994afaea611d5e244d81e7a0bd014e1b3e54901e39a8ec*iHAZvENgwcdXIw4_5zulpA*LIs-RIKqEkB1a4tXIhyLLw*1719540179151*9d449e5d178e5f7155a391f8e4d093314fbae19f03062dca0ceb5677057bbf3c*BkGDUWCUiUMTVTbe4p8ceOQ0rOqyLd06yzdpF4L0HqQ~2',
+    //         path: '/'
+    //       }
+    //     },
+    //     _headers: HeadersList {
+    //       cookies: [
+    //         'delicious-carrot=Fe26.2*1*29c68a6be49ca82c60994afaea611d5e244d81e7a0bd014e1b3e54901e39a8ec*iHAZvENgwcdXIw4_5zulpA*LIs-RIKqEkB1a4tXIhyLLw*1719540179151*9d449e5d178e5f7155a391f8e4d093314fbae19f03062dca0ceb5677057bbf3c*BkGDUWCUiUMTVTbe4p8ceOQ0rOqyLd06yzdpF4L0HqQ~2; Path=/'
+    //       ],
+    //       [Symbol(headers map)]: Map(1) { 'set-cookie' => [Object] },
+    //       [Symbol(headers map sorted)]: null
+    //     }
+    //   }
+
     const data ={
         username: formData.get("username"),
         email: formData.get("email"),
@@ -143,7 +213,6 @@ export async function createAccount(prevState:any, formData:FormData) {
 
 
     if(!result.success) {  
-        // console.log(result.error.flatten( )); // .flatten()은 에러 객체를 축약해줌.
         console.log(result.error.flatten())
         return result.error.flatten();
     } else {
@@ -160,13 +229,14 @@ export async function createAccount(prevState:any, formData:FormData) {
                 id: true,
             }
         });
-        console.log(user); // { id: 4 }
+
+       const session = await getSession();
+
+        session.id = user.id // 세션에 넣을 정보
+        await session.save() 
+
+        redirect("profile");
     }
-    /*     
-    fieldErrors: {
-        password: [ 'String must contain at least 10 character(s)' ],
-        confirm_password: [ 'String must contain at least 10 character(s)' ]
-      } 
-    */
+
 
 }
