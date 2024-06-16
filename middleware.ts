@@ -72,11 +72,11 @@ export async function middleware(request: NextRequest) {
     ////////////////
 
 
-/*     
+/*
     const pathname = request.nextUrl.pathname
     if(pathname === "/") {
         const response = NextResponse.next()
-        response.cookies.set("middleware-cookie", "hello") // 쿠키를 설정함.
+        response.cookies.set("middleware-cookie", "hello") // response.cookies.set("쿠키명", "쿠키값"): 쿠키를 설정함.
         return response;
     }
     if(pathname === "/profile") {
@@ -101,6 +101,8 @@ const publicOnlyUrls: Routes = {
     "/login": true,
     "/sms": true,
     "/create-account": true,
+    "/github/start": true,
+    "/github/complete": true
 }
 
 
@@ -120,6 +122,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ["/", "/login", "/profile", "/create-account", "/sms"] // 미들웨어가 실행될 페이지를 지정함.
+    matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"], // 미들웨어가 실행될 페이지를 지정함.
 };
 
