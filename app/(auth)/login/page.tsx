@@ -53,9 +53,9 @@ export default function Login() {
 
 "use client"
 
-import FormInput from "../components/form-input";
-import FormButton from "../components/form-btn";
-import SocialLogin from "../components/social-login";
+import FormInput from "../../../components/form-input";
+import FormButton from "../../../components/form-btn";
+import SocialLogin from "../../../components/social-login";
 import React from "react";
 import { FormData } from "undici-types";
 import { redirect } from "next/navigation";

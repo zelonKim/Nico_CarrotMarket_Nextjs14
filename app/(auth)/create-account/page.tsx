@@ -2,9 +2,9 @@
 
 import { ChatBubbleOvalLeftEllipsisIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
-import FormInput from "../components/form-input";
-import FormButton from "../components/form-btn";
-import SocialLogin from "../components/social-login";
+import FormInput from "../../../components/form-input";
+import FormButton from "../../../components/form-btn";
+import SocialLogin from "../../../components/social-login";
 import { useFormState } from "react-dom";
 import { createAccount } from "./actions";
 import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
