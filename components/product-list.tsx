@@ -65,19 +65,19 @@ export default function ProductList({initialProducts}: ProductListProps) {
     const [page, setPage] = useState(0);
     const [isLastPage, setIsLastPage] = useState(false);
 
-    const trigger = useRef<HTMLSpanElement>(null);
+    const trigger = useRef<HTMLSpanElement>(null); 
 
     useEffect(() => {
-      const observer = new IntersectionObserver( // new IntersectionObserver(관찰하는 요소에 대한 콜백함수, 관찰 옵션)
+      const observer = new IntersectionObserver( // new IntersectionObserver(관찰하는 요소에 대한 콜백함수, 관찰 옵션): 관찰자 객체를 생성함.
         async (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => 
-          { // 콜백함수의 첫번째 매개변수에는 '관찰하는 요소에 대한 정보'가 담김.
-            // 콜백함수의 두번째 매개변수에는 '관찰자'가 담김.
+          { // 콜백함수의 첫번째 매개변수에는 '관찰하는 요소들에 대한 정보'가 담김.
+            // 콜백함수의 두번째 매개변수에는 '관찰자 객체'가 담김.
 
           console.log(entries);
 
           const element = entries[0];
             if(element.isIntersecting && trigger.current) { // 요소가 화면에 보일 경우 isIntersecting 속성은 true값을 가짐.
-              observer.unobserve(trigger.current); // 관찰자.unobserve(요소):
+              observer.unobserve(trigger.current); // 관찰자 객체.unobserve(요소): 해당 요소에 대한 관찰을 멈춤.
               setIsLoading(true);
 
               const newProducts = await getMoreProducts(page + 1);
@@ -87,7 +87,6 @@ export default function ProductList({initialProducts}: ProductListProps) {
               } else {
                 setIsLastPage(true);
               }
-
               setIsLoading(false);
             }
           }, 
@@ -98,11 +97,11 @@ export default function ProductList({initialProducts}: ProductListProps) {
       )
 
         if(trigger.current) {
-            observer.observe(trigger.current); // 관찰자.observe(요소): 해당 요소를 관찰함.
+            observer.observe(trigger.current); //  관찰자 객체.observe(요소): 해당 요소를 관찰함.
           }
 
           return () => { // 
-            observer.disconnect(); // 관찰자.disconnect():
+            observer.disconnect(); //  관찰자 객체.disconnect(): 관찰을 종료함.
           }
     }, [page])
 
@@ -115,8 +114,8 @@ export default function ProductList({initialProducts}: ProductListProps) {
           ))}
           <span 
             ref={trigger}
-            style={{marginTop: `${page +1 * 900} vh`}}
-            className="mt-[300vh] mb-96 text-sm font-semibold bg-orange-500 w-fit mx-auto px-3 py-2 rounded-md hover:opacity-90 active:scale-95">
+            // style={{marginTop: `${page +1 * 900} vh`}}
+            className="text-sm font-semibold bg-orange-500 w-fit mx-auto px-3 py-2 rounded-md hover:opacity-90 active:scale-95">
             {isLoading ? "로딩 중" : "더 보기"}
           </span>
         </div>
