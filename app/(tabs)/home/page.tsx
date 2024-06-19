@@ -25,10 +25,13 @@ async function getInitialProducts() {
 export type InitialProducts = Prisma.PromiseReturnType<typeof getInitialProducts>; // Prisma.PromiseReturnType<typeof 함수명>: 해당 비동기 함수의 반환타입을 알아냄.
 
 
+
+
 export default async function Products() {
   const initialProducts = await getInitialProducts();
   return (
     <div>
+      {/* <Link href="/home/recent">최근 제품</Link> */}
       <ProductList initialProducts={initialProducts} />
       <Link href="/products/add" className="bg-orange-500 flex items-center justify-center rounded-full size-16 fixed bottom-24 right-8 text-white transition-colors hover:bg-orange-400">
         <PlusIcon className="size-10" />

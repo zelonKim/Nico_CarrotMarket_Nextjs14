@@ -116,7 +116,7 @@ export async function middleware(request: NextRequest) {
         }
     } else { // 사용자가 로그인 상태인 경우
         if(exists) { // 공개 전용 url일 경우
-            return NextResponse.redirect(new URL("/products", request.url))
+            return NextResponse.redirect(new URL("/home", request.url))
         }
     }
 }
