@@ -53,7 +53,6 @@ export default async function Products() {
 
   return (
     <div>
-      {/* <Link href="/home/recent">최근 제품</Link> */}
       <ProductList initialProducts={initialProducts} />
       <form action={revalidate}>
         <button>전체 갱신</button>
