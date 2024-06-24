@@ -8,6 +8,11 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        roboto: "var(--roboto-text)",
+        rubik: "var(--rubik-text)",
+        metallica: "var(--metallica-text)",
+      },
       margin: {
         tomato: "120px",
       },
