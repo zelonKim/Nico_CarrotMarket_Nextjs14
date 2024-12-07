@@ -12,8 +12,8 @@ const roboto = Roboto({
 
 
 const rubik = Rubik_Scribble({ 
-  weight: "400", 
-  style:"normal",
+  weight: ["400"], 
+  style:["normal"],
   subsets:["latin"],
   variable: "--rubik-text"
 })

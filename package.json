@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -23,6 +23,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.51.0",
     "server-only": "^0.0.1",
+    "sharp": "^0.33.5",
     "twilio": "^4.23.0",
     "validator": "^13.11.0",
     "zod": "^3.22.4"
